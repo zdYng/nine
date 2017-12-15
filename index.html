@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0;padding: 0;}
+        p{
+            margin: 15px;
+        }
+        #main{
+            width:700px;
+            height: 520px;
+            margin: 100px auto;
+        }
+        #status-contain{
+            float: left;
+            width: 200px;
+            height: 500px;
+            background: cadetblue;
+            color: #fff;
+        }
+        #canvas{
+            width: 500px;
+            height: 500px;
+            position: relative;
+            float: right;
+        }
+        #canvas > div{
+            display: none;
+            position: absolute;
+            left: 0;
+            top:0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            z-index: 3;
+        }
+        #canvas canvas{
+            position: absolute;
+            z-index: 1;
+        }
+
+        .pk-view{
+            background: #666666;
+            color: #fff;
+            width: 300px;
+            height: 400px;
+        }
+        .pk-view .right{
+            float: right;
+        }
+        .pk-view .left{
+            float: left;
+        }
+        #assets{
+            display: none;
+        }
+        #prompt{
+            position: absolute;
+            background: #666;
+            width: 300px;
+            height: 100px;
+            color: #fff;
+        }
+        #dead{
+            color: #fff;
+            width:200px;
+            background: #333;
+        }
+
+        #dead .button div{
+            text-align: center;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            padding: 3px 5px;
+            margin: 15px;
+        }
+        #dead .red{
+            color: red;
+        }
+        .mask{
+            background: #333;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+        }
+        .clearfix:after{
+            content:".";
+            height: 0;
+            clear: both;
+            display: block;
+            visibility: hidden;
+        }
+        .clearfix{
+            zoom: 1;
+        }
+    </style>
+</head>
+<body>
+<div id="main" class="clearfix">
+    <div id="status-contain"></div>
+    <div id="canvas">
+        <canvas id="ground" width="500" height="500"></canvas>
+        <canvas id="mainC" width="500" height="500"></canvas>
+        <div class="pk-view clearfix"></div>
+        <div id="prompt">
+            <p>你获得了<span></span></p>
+        </div>
+        <div id="dead">
+            <p>勇士你已经死了，<span class="red">但幸运的是马化腾发现了你的尸体</span>，现在你可以：</p>
+            <div class="button">
+                <div id="back">立即复活</div>
+                <div id="god">充值一个亿后复活</div>
+                <div id="over">我选择死亡</div>
+            </div>
+        </div>
+        <div class="mask"></div>
+    </div>
+</div>
+
+<!-- m是怪兽 p是玩家 g是物品 w是墙 l是楼梯 -->
+
+<script type="text/html" id="status">
+    <img src="assets/p1.png" id="gamer" alt="">
+    <p class="name">名字：<span>{{name}}</span></p>
+    <p class="hp">生命：<span>{{HP}}</span></p>
+    <p class="atk">攻击：<span>{{ATK}}</span></p>
+    <p class="def">防御：<span>{{DEF}}</span></p>
+    <p class="money">金钱：<span>{{money}}</span></p>
+    <p class="jingyan">经验：<span>{{jingyan}}</span></p>
+    <p class="lv">等级：<span>{{lv}}</span></p>
+</script>
+
+<script type="text/html" id="pk">
+    <div class="left">
+        <img src="{{mImg}}" alt="">
+        <p class="name">名字：<span>{{mName}}</span></p>
+        <p class="hp">生命：<span>{{mHP}}</span></p>
+        <p class="atk">攻击：<span>{{mATK}}</span></p>
+        <p class="def">防御：<span>{{mDEF}}</span></p>
+        <p class="money">金钱：<span>{{mMoney}}</span></p>
+        <p class="jingyan">经验：<span>{{mJingyan}}</span></p>
+    </div>
+    <div class="right">
+        <img src="assets/p1.png" alt="">
+        <p class="name">玩家：<span>{{pName}}</span></p>
+        <p class="hp">生命：<span>{{pHP}}</span></p>
+        <p class="atk">攻击：<span>{{pATK}}</span></p>
+        <p class="def">防御：<span>{{pDEF}}</span></p>
+        <p class="lv">等级：<span>{{pLv}}</span></p>
+    </div>
+</script>
+<script type="text/html" id="speak">
+
+</script>
+<div id="assets">
+    <img id="p1" src="assets/p1.png" alt="">
+    <img id="m1" src="assets/m1.png" alt="">
+    <img id="m2" src="assets/m2.png" alt="">
+    <img id="m3" src="assets/m3.png" alt="">
+    <img id="m4" src="assets/m4.png" alt="">
+    <img id="m5" src="assets/m5.png" alt="">
+    <img id="m6" src="assets/m6.png" alt="">
+    <img id="m7" src="assets/m7.png" alt="">
+    <img id="m8" src="assets/m8.png" alt="">
+    <img id="m9" src="assets/m9.png" alt="">
+    <img id="m10" src="assets/m10.png" alt="">
+    <img id="m11" src="assets/m11.png" alt="">
+    <img id="m12" src="assets/m12.png" alt="">
+    <img id="m13" src="assets/m13.png" alt="">
+    <img id="m14" src="assets/m14.png" alt="">
+    <img id="m15" src="assets/m15.png" alt="">
+    <img id="g1" src="assets/g1.png" alt="">
+    <img id="g2" src="assets/g2.png" alt="">
+    <img id="g3" src="assets/g3.png" alt="">
+    <img id="g4" src="assets/g4.png" alt="">
+    <img id="g5" src="assets/g5.png" alt="">
+    <img id="g6" src="assets/g6.png" alt="">
+    <img id="g7" src="assets/g7.png" alt="">
+    <img id="g8" src="assets/g8.png" alt="">
+    <img id="g9" src="assets/g9.png" alt="">
+    <img id="f1" src="assets/f1.jpg" alt="">
+    <img id="f2" src="assets/f2.jpg" alt="">
+    <img id="f3" src="assets/f3.jpg" alt="">
+    <img id="f4" src="assets/M.png" alt="">
+    <img src="assets/" alt="">
+    <img src="assets/" alt="">
+</div>
+
+</body>
+<script src="lib/jquery.js"></script>
+<script src="lib/template.js"></script>
+<script src="js/all.js"></script>
+</html>
